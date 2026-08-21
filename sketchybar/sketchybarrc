@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# config directory
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar"
+export CONFIG_DIR
+source "$CONFIG_DIR/colors.sh"
+
+# Bar geometry
+sketchybar --bar \
+  position=top \
+  height=36 \
+  y_offset=2 \
+  margin=8 \
+  corner_radius=12 \
+  color="$BAR_COLOR" \
+  border_color="$BAR_BORDER_COLOR" \
+  border_width=1 \
+  blur_radius=20 \
+  padding_left=8 \
+  padding_right=8 \
+  notch_width=208
+
+# Shared item defaults
+sketchybar --default \
+  background.height=26 \
+  background.color="$SURFACE_COLOR" \
+  background.corner_radius=8 \
+  background.padding_left=4 \
+  background.padding_right=4 \
+  icon.padding_left=8 \
+  icon.padding_right=8 \
+  icon.background.height=26 \
+  icon.background.corner_radius=8 \
+  label.padding_left=8 \
+  label.padding_right=8 \
+  icon.font="$FONT_DISPLAY" \
+  label.font="$FONT_TEXT"
+
+# Load items in their left-to-right order
+ITEMS=(
+  workspaces
+  front_app
+  media
+  network
+  ram
+  cpu
+  volume
+  battery
+  clock
+)
+
+for item in "${ITEMS[@]}"; do
+  source "$CONFIG_DIR/items/$item.sh"
+done
+
+# Refresh immediately after all items are registered
+sketchybar --update

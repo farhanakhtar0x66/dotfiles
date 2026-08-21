@@ -1,0 +1,17 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs & backups
+*.log
+.dotfiles-backup/
+
+# Shell runtime & history
+.zsh_history
+*.zwc
+.zcompdump*
+
+# Tmux plugins (dynamically managed by TPM)
+tmux/plugins/*
+!tmux/plugins/.gitkeep

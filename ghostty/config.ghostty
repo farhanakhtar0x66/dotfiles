@@ -1,0 +1,20 @@
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-style = "Bold"
+font-size = 14
+
+# Theme
+theme = "Catppuccin Mocha"
+
+# Cursor
+cursor-style = block
+
+# Window Padding
+window-padding-x = 8
+window-padding-y = 8
+
+# Mouse
+mouse-hide-while-typing = true
+
+# Scrollbar
+scrollbar = never
