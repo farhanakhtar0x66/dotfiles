@@ -4,6 +4,12 @@ A clean, modern, and reproducible macOS dotfiles setup featuring **AeroSpace** (
 
 ![preview](assets/preview.png)
 
+> [!WARNING]
+> SketchyBar's spacing, padding, and item widths are tuned for a 13" MacBook Air
+> display. On other screen sizes it may look cramped, overly spread out, or
+> misaligned — you'll likely need to tweak sketchybar/colors.sh and the item
+> widths in sketchybar/items/ to match your display.
+
 ---
 
 ## ⚡ Features & Components
