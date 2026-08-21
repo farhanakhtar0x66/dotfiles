@@ -12,7 +12,7 @@ A clean, modern, and reproducible macOS dotfiles setup featuring **AeroSpace** (
 
 ---
 
-## ⚡ Features & Components
+## Features & Components
 
 - **Window Manager**: [AeroSpace](https://github.com/nikitabobko/AeroSpace) — i3-like tiling window manager for macOS with borders.
 - **Status Bar**: [SketchyBar](https://github.com/FelixKratz/SketchyBar) — Highly customizable macOS status bar with workspaces, media, resource monitors, and smooth animations.
@@ -23,7 +23,7 @@ A clean, modern, and reproducible macOS dotfiles setup featuring **AeroSpace** (
 
 ---
 
-## 📦 What Gets Installed & Symlinked
+## What Gets Installed & Symlinked
 
 Every configuration is symlinked from this repository to `~/.config/` so changes in the repo stay live immediately.
 
@@ -40,14 +40,14 @@ Every configuration is symlinked from this repository to `~/.config/` so changes
 
 ---
 
-## 🛠️ Prerequisites
+## Prerequisites
 
 - **macOS** (Apple Silicon or Intel)
 - **Homebrew** (the installer will automatically install Homebrew if missing)
 
 ---
 
-## 🚀 One-Line Installation
+## One-Line Installation
 
 Clone the repository and run the automated installer:
 
@@ -66,7 +66,7 @@ git clone https://github.com/farhanakhtar0x66/dotfiles.git ~/Coding/Dotfiles && 
 
 ---
 
-## 🎨 Customization
+## Customization
 
 ### SketchyBar Theme & Colors
 Edit `sketchybar/colors.sh` to modify color hex codes, font families, and animation curves:
@@ -96,7 +96,7 @@ aerospace reload-config
 
 ---
 
-## 🔄 Uninstallation
+## Uninstallation
 
 To remove all created symlinks and automatically restore your previous configuration backup:
 
@@ -106,7 +106,7 @@ To remove all created symlinks and automatically restore your previous configura
 
 ---
 
-## 🤝 Credits & Acknowledgements
+## Credits & Acknowledgements
 
 - **Theme**: [Catppuccin](https://github.com/catppuccin/catppuccin)
 - **Window Management**: [AeroSpace](https://github.com/nikitabobko/AeroSpace) by Nikita Bobko
@@ -118,6 +118,6 @@ To remove all created symlinks and automatically restore your previous configura
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the [MIT License](LICENSE).
