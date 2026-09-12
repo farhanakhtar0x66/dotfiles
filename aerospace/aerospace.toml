@@ -55,6 +55,12 @@ alt-ctrl-j = 'move down'
 alt-ctrl-k = 'move up'
 alt-ctrl-l = 'move right'
 
+# Swap Windows
+alt-cmd-h = 'swap left'
+alt-cmd-j = 'swap down'
+alt-cmd-k = 'swap up'
+alt-cmd-l = 'swap right'
+
 # Join Splits
 alt-shift-h = 'join-with left'
 alt-shift-j = 'join-with down'
