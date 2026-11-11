@@ -46,13 +46,20 @@ alias ls='eza --icons=always --group-directories-first'
 alias l='eza -1 --icons=always --group-directories-first'
 alias ll="eza -la --icons=always --group-directories-first --git --no-permissions --no-user --time-style=relative --ignore-glob='.DS_Store|.CFUserTextEncoding|.zshenv|.homebrew|.gemini'"
 alias la='eza -la --icons=always --group-directories-first --git --time-style=relative'
-alias lt='eza --tree --level=2 --icons=always'
+alias lt='eza --tree --level=1 --icons=always'
 
 # Aliases: Navigation & Shell
 alias zshconfig="$EDITOR ${ZDOTDIR:-$HOME/.config/zsh}/.zshrc"
 alias reload="source ${ZDOTDIR:-$HOME/.config/zsh}/.zshrc"
 alias ..="cd .."
 alias ...="cd ../.."
+
+# Theming (GitHub Dark)
+export BAT_THEME="GitHub Dark"
+export FZF_DEFAULT_OPTS=" \
+--color=bg+:#161b22,bg:#0d1117,spinner:#58a6ff,hl:#58a6ff \
+--color=fg:#c9d1d9,header:#58a6ff,info:#bc8cff,pointer:#58a6ff \
+--color=marker:#56d364,fg+:#f0f6fc,prompt:#58a6ff,hl+:#79c0ff"
 
 # Integrations
 eval "$(fzf --zsh)"
@@ -66,3 +73,6 @@ fi
 
 # Startup
 fastfetch
+
+# Created by `pipx` on 2026-10-02 13:55:38
+export PATH="$PATH:/Users/farhanakhtar/.local/bin"

@@ -31,7 +31,7 @@ $cmd_duration\
 $line_break\
 $character"""
 
-palette = 'catppuccin_mocha'
+palette = 'github_dark'
 
 [os]
 disabled = false
@@ -174,6 +174,34 @@ style = "bg:lavender"
 disabled = false
 show_notifications = true
 min_time_to_notify = 45000
+
+[palettes.github_dark]
+rosewater = "#ffc6be"
+flamingo = "#ffa657"
+pink = "#f778ba"
+mauve = "#d2a8ff"
+red = "#ff7b72"
+maroon = "#ff7b72"
+peach = "#ffa657"
+yellow = "#e3b341"
+green = "#56d364"
+teal = "#39c5cf"
+sky = "#79c0ff"
+sapphire = "#388bfd"
+blue = "#58a6ff"
+lavender = "#d2a8ff"
+text = "#c9d1d9"
+subtext1 = "#b1bac4"
+subtext0 = "#8b949e"
+overlay2 = "#6e7681"
+overlay1 = "#484f58"
+overlay0 = "#30363d"
+surface2 = "#30363d"
+surface1 = "#21262d"
+surface0 = "#161b22"
+base = "#0d1117"
+mantle = "#090d13"
+crust = "#010409"
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"

@@ -4,7 +4,8 @@ font-style = "Bold"
 font-size = 14
 
 # Theme
-theme = "Catppuccin Mocha"
+theme = "GitHub Dark"
+foreground = #ffffff
 
 # Cursor
 cursor-style = block
@@ -18,3 +19,9 @@ mouse-hide-while-typing = true
 
 # Scrollbar
 scrollbar = never
+
+# Transparency
+background-opacity = 0.85
+
+# macOS background blur
+background-blur-radius = 20

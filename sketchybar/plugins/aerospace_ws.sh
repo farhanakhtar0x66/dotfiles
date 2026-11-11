@@ -123,7 +123,10 @@ for sid in $(seq 1 "$WORKSPACE_COUNT"); do
             icon="$sid"
             icon.color="$ICON_DARK_COLOR"
             icon.background.color="$PEACH"
+            icon.background.border_width=0
             background.color="$SURFACE_COLOR"
+            background.border_color="$PILL_BORDER_COLOR"
+            background.border_width=1
             label="${ICON_STR[$sid]:-—}"
             label.color="$TEXT_COLOR"
             label.width=dynamic
@@ -135,7 +138,10 @@ for sid in $(seq 1 "$WORKSPACE_COUNT"); do
             icon="$sid"
             icon.color="$TEXT_COLOR"
             icon.background.color="$SURFACE_COLOR"
+            icon.background.border_color="$PILL_BORDER_COLOR"
+            icon.background.border_width=1
             background.color=0x00000000
+            background.border_width=0
             label.width=0
         )
     fi

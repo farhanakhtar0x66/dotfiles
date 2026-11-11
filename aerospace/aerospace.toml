@@ -3,7 +3,7 @@ config-version = 2
 # Startup & Integration
 after-startup-command = [
   'exec-and-forget sketchybar',
-  'exec-and-forget borders active_color=0xffcba6f7 inactive_color=0xff313244 width=8.0 hidpi=on',
+  'exec-and-forget borders active_color=0xffffffff inactive_color=0xff404040 width=5.0 hidpi=on',
 ]
 exec-on-workspace-change = [
   '/bin/bash',
@@ -42,6 +42,7 @@ alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
 alt-f = 'layout floating tiling'
 alt-r = 'flatten-workspace-tree'
+alt-shift-b = 'exec-and-forget /usr/local/bin/rawmax toggle'
 
 # Focus
 alt-h = 'focus left'

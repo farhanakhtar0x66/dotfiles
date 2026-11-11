@@ -24,6 +24,8 @@ sketchybar --bar \
 sketchybar --default \
   background.height=26 \
   background.color="$SURFACE_COLOR" \
+  background.border_color="$PILL_BORDER_COLOR" \
+  background.border_width=1 \
   background.corner_radius=8 \
   background.padding_left=4 \
   background.padding_right=4 \

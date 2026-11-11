@@ -16,10 +16,13 @@ for sid in {1..9}; do
             icon.align=center \
             icon.padding_left=8 \
             icon.padding_right=8 \
+            icon.background.border_color="$PILL_BORDER_COLOR" \
+            icon.background.border_width=1 \
             label.font="$FONT_ICON" \
             label.padding_left=8 \
             label.padding_right=8 \
             background.color=0x00000000 \
+            background.border_width=0 \
             click_script="aerospace workspace $sid"
 done
 
