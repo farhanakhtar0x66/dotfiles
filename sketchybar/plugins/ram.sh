@@ -7,6 +7,4 @@ if ! [[ "$FREE_PERCENT" =~ ^[0-9]+$ ]]; then
 fi
 
 RAM_USAGE=$((100 - FREE_PERCENT))
-USED_GB=$(echo "$RAM_USAGE 16" | awk '{printf "%.1f", $1 * $2 / 100}')
-
-sketchybar --set "$NAME" icon="${USED_GB}/16 GB"
+sketchybar --set "$NAME" icon="${RAM_USAGE}%"
