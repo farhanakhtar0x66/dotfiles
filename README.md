@@ -43,7 +43,7 @@ Every configuration is symlinked from this repository to `~/.config/` so changes
 ## Prerequisites
 
 - **macOS** (Apple Silicon or Intel)
-- **Homebrew** (the installer will automatically install Homebrew if missing)
+- **Homebrew** (install it separately from [brew.sh](https://brew.sh/) before running the installer)
 
 ---
 
@@ -98,11 +98,13 @@ aerospace reload-config
 
 ## Uninstallation
 
-To remove all created symlinks and automatically restore your previous configuration backup:
+To remove managed symlinks and restore the latest backup where the destination is free:
 
 ```bash
 ./install.sh --uninstall
 ```
+
+Existing files and unrelated symlinks are never overwritten during restoration. Conflicting backup entries remain under `~/.dotfiles-backup/` for manual recovery.
 
 ---
 

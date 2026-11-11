@@ -105,13 +105,8 @@ symlink_item() {
 # ------------------------------------------------------------------------------
 ensure_homebrew() {
   if ! command -v brew &>/dev/null; then
-    info "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [[ -f /opt/homebrew/bin/brew ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -f /usr/local/bin/brew ]]; then
-      eval "$(/usr/local/bin/brew shellenv)"
-    fi
+    error "Homebrew is required. Install it from https://brew.sh/ and rerun this script."
+    return 1
   else
     success "Homebrew is installed."
   fi
@@ -358,7 +353,7 @@ uninstall_dotfiles() {
     if [[ -L "$target" ]]; then
       local link_dest
       link_dest="$(readlink "$target" || true)"
-      if [[ "$link_dest" == "$REPO_DIR"* ]]; then
+      if [[ "$link_dest" == "$REPO_DIR/"* ]]; then
         rm "$target"
         info "Removed symlink: $target"
       fi
@@ -386,15 +381,25 @@ uninstall_dotfiles() {
     local latest_backup
     latest_backup="$(find "$BACKUP_BASE" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1)"
     if [[ -n "$latest_backup" && -d "$latest_backup" ]]; then
-      info "Restoring backup from $latest_backup..."
-      cp -R "$latest_backup/." "$HOME/"
-      rm -rf "$latest_backup"
-      success "Backup restored from $latest_backup."
-      
-      # Clean up backup base if empty
-      if [[ -z "$(ls -A "$BACKUP_BASE" 2>/dev/null)" ]]; then
-        rmdir "$BACKUP_BASE" 2>/dev/null || true
+      info "Restoring available files from $latest_backup..."
+      local saved relative destination
+      while IFS= read -r -d '' saved; do
+        relative="${saved#$latest_backup/}"
+        destination="$HOME/$relative"
+        if [[ -e "$destination" || -L "$destination" ]]; then
+          warn "Keeping existing $destination; backup retained at $saved"
+          continue
+        fi
+        mkdir -p "$(dirname "$destination")"
+        cp -pP "$saved" "$destination"
+        rm "$saved"
+        info "Restored: $destination"
+      done < <(find "$latest_backup" -mindepth 1 ! -type d -print0)
+      find "$latest_backup" -depth -type d -empty -delete
+      if [[ -d "$latest_backup" ]]; then
+        warn "Some backups were retained because their destinations exist."
       fi
+      rmdir "$BACKUP_BASE" 2>/dev/null || true
     else
       info "No backup found to restore."
     fi
