@@ -130,16 +130,23 @@ function M.setup(opts)
       if M.restore then M.restore() end
       return
     end
-    -- Window resized (terminal resize, tmux split, ...): re-centre by rebuilding the page.
-    if win.width ~= M.w or win.height ~= M.h then
-      M.w, M.h = win.width, win.height
-      local text, cursor = build(M.w, M.h)
-      local f = win.file
-      f:delete(0, f.size)
-      f:insert(0, text)
-      win.selection.pos = cursor
-    end
     for _, r in ipairs(ranges) do win:style(r[1], r[2], r[3]) end
+  end)
+
+  -- Window resized (terminal resize, tmux split, ...): re-centre by rebuilding the page.
+  -- Done after the frame is drawn, never inside WIN_HIGHLIGHT: editing the buffer mid-draw
+  -- leaves stale cells on screen. The follow-up redraw paints the new layout cleanly.
+  vis.events.subscribe(vis.events.UI_DRAW, function()
+    local win = M.win
+    if not (M.active and win and win.file == M.file) then return end
+    if win.width == M.w and win.height == M.h then return end
+    M.w, M.h = win.width, win.height
+    local text, cursor = build(M.w, M.h)
+    local f = win.file
+    f:delete(0, f.size)
+    f:insert(0, text)
+    win.selection.pos = cursor
+    vis:redraw()
   end)
 end
 
