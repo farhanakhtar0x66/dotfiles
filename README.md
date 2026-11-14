@@ -5,9 +5,9 @@ A clean, modern, and reproducible macOS dotfiles setup featuring **AeroSpace** (
 ![preview](assets/preview.png)
 
 > [!NOTE]
-> The preview image is from the previous Catppuccin version. SketchyBar is now a
-> **sticky, translucent** full-width bar (38pt, taller than the MacBook Air's 37.5pt notch strip, so it hides the notch). On other
-> displays, adjust `height` and `notch_width` in `sketchybar/sketchybarrc`.
+> SketchyBar is a **sticky, translucent** full-width bar (38pt: taller than the 13" MacBook Air's
+> 37.5pt notch strip, so it hides the notch). On other displays, adjust `height` and `notch_width`
+> in `sketchybar/sketchybarrc`.
 
 ---
 
@@ -92,7 +92,7 @@ Profile startup any time with `ZPROF=1 zsh -i -c exit`. `ll` skips git status fo
 tmux auto-starts only in Ghostty (not in Zed/VS Code terminals); each new tmux pane greets you with fastfetch.
 
 ### Editor: vis
-`vis/visrc.lua` mirrors the old Neovim keys (leader = Space): `jk` escape, `␣w` save, `␣sv`/`␣sh`/`␣sx` splits, `␣ff` find file (fzf), `␣fs` grep (ripgrep+fzf), `␣ee` explorer (yazi), `␣lg` lazygit, `␣y`/`␣p` system clipboard. Run it as `vis`, `vim` or `vi`. Homebrew's vis bottle is broken (Lua 5.5 core + Lua 5.1 lpeg), so `install.sh` builds vis 0.9 and lpeg against Lua 5.4 into `~/.local`.
+Starting `vis` with no file shows a welcome page (a port of the old Neovim dashboard: block-letter banner + menu, `vis/welcome.lua`). `e` starts a new file, `␣ff`/`␣fs`/`␣ee`/`␣ec` find files, search, browse or edit the config, `q` quits; it disappears as soon as you open or type anything. `vis/visrc.lua` mirrors the old Neovim keys (leader = Space): `jk` escape, `␣w` save, `␣sv`/`␣sh`/`␣sx` splits, `␣ff` find file (fzf), `␣fs` grep (ripgrep+fzf), `␣ee` explorer (yazi), `␣lg` lazygit, `␣y`/`␣p` system clipboard. Run it as `vis`, `vim` or `vi`. Homebrew's vis bottle is broken (Lua 5.5 core + Lua 5.1 lpeg), so `install.sh` builds vis 0.9 and lpeg against Lua 5.4 into `~/.local`.
 
 ### Apps configured in place (not symlinked)
 These files also hold your own settings, so the installer doesn't manage them. They now point at the Zacess theme:
