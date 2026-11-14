@@ -126,13 +126,23 @@ install_packages() {
     "starship"
     "fastfetch"
     "tmux"
-    "nowplaying-cli"
+    "media-control"
+    "jq"
+    "zsh-autosuggestions"
+    "zsh-syntax-highlighting"
     "eza"
+    "fd"
+    "ripgrep"
+    "btop"
+    "yazi"
     "fzf"
     "zoxide"
     "bat"
     "lazygit"
-    "neovim"
+    "lua@5.4"
+    "lpeg"
+    "libtermkey"
+    "tre"
   )
 
   local CASKS=(
@@ -171,6 +181,61 @@ install_packages() {
 }
 
 # ------------------------------------------------------------------------------
+# vis editor — Homebrew's bottle is broken (Lua 5.5 core + Lua 5.1 lpeg), so build
+# vis 0.9 and lpeg from source against Lua 5.4 into ~/.local.
+# ------------------------------------------------------------------------------
+install_vis() {
+  local tmp; tmp="$(mktemp -d)"
+
+  if [[ -x "$HOME/.local/bin/vis" ]] && "$HOME/.local/bin/vis" -v 2>/dev/null | grep -q "vis 0.9"; then
+    success "vis already built at ~/.local/bin/vis"
+  else
+    info "Building vis 0.9 against Lua 5.4..."
+    ( cd "$tmp" \
+      && curl -fsSL -o vis.tar.gz https://github.com/martanne/vis/archive/refs/tags/v0.9.tar.gz \
+      && tar xzf vis.tar.gz && cd vis-0.9 \
+      && PKG_CONFIG_PATH="$(brew --prefix lua@5.4)/lib/pkgconfig:$(brew --prefix)/lib/pkgconfig" \
+         ./configure --prefix="$HOME/.local" --enable-lpeg-static=no >/dev/null \
+      && make -j"$(sysctl -n hw.ncpu)" >/dev/null && make install >/dev/null ) \
+      && success "Built vis -> ~/.local/bin/vis" || warn "vis build failed, continuing..."
+  fi
+
+  # vis only links a *static* lpeg, which Homebrew doesn't ship; build the shared
+  # Lua 5.4 module instead (visrc.lua loads it from ~/.local/lib/lua/5.4).
+  if [[ -f "$HOME/.local/lib/lua/5.4/lpeg.so" ]]; then
+    success "lpeg already built for Lua 5.4"
+  else
+    info "Building lpeg 1.1.0 for Lua 5.4..."
+    ( cd "$tmp" \
+      && curl -fsSL -o lpeg.tar.gz https://www.inf.puc-rio.br/~roberto/lpeg/lpeg-1.1.0.tar.gz \
+      && tar xzf lpeg.tar.gz && cd lpeg-1.1.0 \
+      && make macosx LUADIR="$(brew --prefix lua@5.4)/include/lua" >/dev/null \
+      && mkdir -p "$HOME/.local/lib/lua/5.4" && cp lpeg.so "$HOME/.local/lib/lua/5.4/lpeg.so" ) \
+      && success "Built lpeg for Lua 5.4" || warn "lpeg build failed; vis will run without syntax colors"
+  fi
+  rm -rf "$tmp"
+}
+
+# ------------------------------------------------------------------------------
+# Tiny C tools compiled from the repo into ~/.local/bin:
+#   rawmax  — brightness toggle (alt-shift-b)
+#   sysstat — CPU % + used RAM for the bar in ~4ms (replaces ps/vm_stat polling)
+# ------------------------------------------------------------------------------
+install_rawmax() {
+  mkdir -p "$HOME/.local/bin"
+  if clang -O2 -o "$HOME/.local/bin/rawmax" "$REPO_DIR/brightness/rawmax.c" -framework CoreGraphics 2>/dev/null; then
+    success "Built rawmax -> ~/.local/bin/rawmax"
+  else
+    warn "rawmax build failed (needs Xcode command line tools: xcode-select --install)"
+  fi
+  if clang -O2 -o "$HOME/.local/bin/sysstat" "$REPO_DIR/sketchybar/helpers/sysstat.c" 2>/dev/null; then
+    success "Built sysstat -> ~/.local/bin/sysstat"
+  else
+    warn "sysstat build failed; the bar will fall back to slower ps/vm_stat"
+  fi
+}
+
+# ------------------------------------------------------------------------------
 # Zsh Environment Setup
 # ------------------------------------------------------------------------------
 setup_zshenv() {
@@ -196,29 +261,6 @@ setup_zshenv() {
   fi
 }
 
-# ------------------------------------------------------------------------------
-# Oh My Zsh Setup (Dependencies for .zshrc plugins)
-# ------------------------------------------------------------------------------
-setup_zsh_framework() {
-  local omz_dir="$CONFIG_DIR/oh-my-zsh"
-  if [[ ! -d "$omz_dir" ]]; then
-    info "Installing Oh My Zsh into $omz_dir..."
-    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$omz_dir" 2>/dev/null || true
-  fi
-
-  local plugins_dir="$omz_dir/custom/plugins"
-  mkdir -p "$plugins_dir"
-
-  if [[ ! -d "$plugins_dir/zsh-autosuggestions" ]]; then
-    info "Cloning zsh-autosuggestions plugin..."
-    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git "$plugins_dir/zsh-autosuggestions" 2>/dev/null || true
-  fi
-
-  if [[ ! -d "$plugins_dir/zsh-syntax-highlighting" ]]; then
-    info "Cloning zsh-syntax-highlighting plugin..."
-    git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugins_dir/zsh-syntax-highlighting" 2>/dev/null || true
-  fi
-}
 
 # ------------------------------------------------------------------------------
 # Tmux & TPM Setup
@@ -283,13 +325,18 @@ setup_symlinks() {
   symlink_item "$REPO_DIR/fastfetch" "$CONFIG_DIR/fastfetch"
 
   # 3. Ghostty
-  symlink_item "$REPO_DIR/ghostty/config.ghostty" "$CONFIG_DIR/ghostty/config"
+  # Ghostty also reads the legacy `config` file; retire it so only one config applies.
+  [[ -e "$CONFIG_DIR/ghostty/config" || -L "$CONFIG_DIR/ghostty/config" ]] && backup_item "$CONFIG_DIR/ghostty/config"
+  symlink_item "$REPO_DIR/ghostty/config.ghostty" "$CONFIG_DIR/ghostty/config.ghostty"
 
   # 4. SketchyBar
   symlink_item "$REPO_DIR/sketchybar" "$CONFIG_DIR/sketchybar"
 
   # 5. Starship
   symlink_item "$REPO_DIR/starship.toml" "$CONFIG_DIR/starship.toml"
+
+  # 5b. JankyBorders
+  symlink_item "$REPO_DIR/borders/bordersrc" "$CONFIG_DIR/borders/bordersrc"
 
   # 6. Tmux
   symlink_item "$REPO_DIR/tmux/tmux.conf" "$CONFIG_DIR/tmux/tmux.conf"
@@ -312,7 +359,15 @@ setup_symlinks() {
     fi
   done
 
-  # 8. ~/.zshenv
+  # 8. App themes (Zacess High Contrast)
+  symlink_item "$REPO_DIR/eza/theme.yml" "$CONFIG_DIR/eza/theme.yml"
+  symlink_item "$REPO_DIR/bat/config" "$CONFIG_DIR/bat/config"
+  symlink_item "$REPO_DIR/btop/zacess.theme" "$CONFIG_DIR/btop/themes/zacess.theme"
+  symlink_item "$REPO_DIR/yazi/theme.toml" "$CONFIG_DIR/yazi/theme.toml"
+  symlink_item "$REPO_DIR/zed/themes/zacess.json" "$CONFIG_DIR/zed/themes/zacess.json"
+  symlink_item "$REPO_DIR/vis" "$CONFIG_DIR/vis"
+
+  # 9. ~/.zshenv
   setup_zshenv
 }
 
@@ -334,7 +389,13 @@ uninstall_dotfiles() {
   local targets=(
     "$CONFIG_DIR/aerospace/aerospace.toml"
     "$CONFIG_DIR/fastfetch"
-    "$CONFIG_DIR/ghostty/config"
+    "$CONFIG_DIR/ghostty/config.ghostty"
+    "$CONFIG_DIR/eza/theme.yml"
+    "$CONFIG_DIR/bat/config"
+    "$CONFIG_DIR/btop/themes/zacess.theme"
+    "$CONFIG_DIR/yazi/theme.toml"
+    "$CONFIG_DIR/zed/themes/zacess.json"
+    "$CONFIG_DIR/vis"
     "$CONFIG_DIR/sketchybar"
     "$CONFIG_DIR/starship.toml"
     "$CONFIG_DIR/tmux/tmux.conf"
@@ -415,7 +476,8 @@ print_summary() {
   echo "Symlinked configurations:"
   echo "  • AeroSpace    -> ~/.config/aerospace/aerospace.toml"
   echo "  • Fastfetch    -> ~/.config/fastfetch/"
-  echo "  • Ghostty      -> ~/.config/ghostty/config"
+  echo "  • Ghostty      -> ~/.config/ghostty/config.ghostty"
+  echo "  • Themes       -> eza, bat, btop, yazi, zed, vis (Zacess High Contrast)"
   echo "  • SketchyBar   -> ~/.config/sketchybar/"
   echo "  • Starship     -> ~/.config/starship.toml"
   echo "  • Tmux & TPM   -> ~/.config/tmux/tmux.conf"
@@ -462,8 +524,9 @@ main() {
   fix_permissions
   ensure_homebrew
   install_packages
+  install_vis
+  install_rawmax
   setup_symlinks
-  setup_zsh_framework
   setup_tmux_plugins
 
   # If backup directory was created but left empty, remove it

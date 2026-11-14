@@ -7,6 +7,4 @@ sketchybar --add item clock right \
                  icon.background.color="$MAUVE" \
                  label.color="$TEXT_COLOR" \
                  update_freq=10 \
-                 mouse.entered_script="$HOVER_ENTER_SCRIPT" \
-                 mouse.exited_script="$HOVER_EXIT_SCRIPT" \
                  script="$CONFIG_DIR/plugins/clock.sh"

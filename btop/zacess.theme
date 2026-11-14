@@ -1,0 +1,77 @@
+# btop — Zacess High Contrast
+# Bashtop/Btop GitHub Dark Theme
+# Colors matching GitHub Dark color palette
+
+# Main background, empty for terminal default
+theme[main_bg]="#000000"
+
+# Main text color
+theme[main_fg]="#ffffff"
+
+# Title color for boxes
+theme[title]="#ffffff"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#8fd0ff"
+
+# Background color of selected items
+theme[selected_bg]="#0a2552"
+
+# Foreground color of selected items
+theme[selected_fg]="#ffffff"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#5c5c5c"
+
+# Color of text appearing on top of graphs
+theme[graph_text]="#b3b3b3"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph
+theme[proc_misc]="#95ff98"
+
+# Box outline colors (Cpu, Memory, Net, Processes, Dividers)
+theme[cpu_box]="#2e2e2e"
+theme[mem_box]="#2e2e2e"
+theme[net_box]="#2e2e2e"
+theme[proc_box]="#2e2e2e"
+theme[div_line]="#2e2e2e"
+
+# Temperature graph colors (Green -> Yellow -> Red)
+theme[temp_start]="#26f444"
+theme[temp_mid]="#f5c400"
+theme[temp_end]="#ff9e94"
+
+# CPU graph colors
+theme[cpu_start]="#8fd0ff"
+theme[cpu_mid]="#0a2552"
+theme[cpu_end]="#f2a6ff"
+
+# Mem/Disk free meter
+theme[free_start]="#26f444"
+theme[free_mid]=""
+theme[free_end]="#26f444"
+
+# Mem/Disk cached meter
+theme[cached_start]="#0a2552"
+theme[cached_mid]=""
+theme[cached_end]="#8fd0ff"
+
+# Mem/Disk available meter
+theme[available_start]="#f5c400"
+theme[available_mid]=""
+theme[available_end]="#f5c400"
+
+# Mem/Disk used meter
+theme[used_start]="#ff9e94"
+theme[used_mid]=""
+theme[used_end]="#ff9e94"
+
+# Download graph colors
+theme[download_start]="#0a2552"
+theme[download_mid]="#8fd0ff"
+theme[download_end]="#95ff98"
+
+# Upload graph colors
+theme[upload_start]="#f2a6ff"
+theme[upload_mid]="#f2a6ff"
+theme[upload_end]="#ffffff"

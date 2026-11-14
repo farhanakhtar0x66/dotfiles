@@ -6,13 +6,11 @@ sketchybar --add item cpu q \
                      label.font="$FONT_DISPLAY" \
                      label.background.drawing=on \
                      label.background.color="$MAUVE" \
-                     label.background.height=26 \
-                     label.background.corner_radius=8 \
+                     label.background.height=30 \
+                     label.background.corner_radius=10 \
                      label.color="$ICON_DARK_COLOR" \
                      icon="--" \
                      icon.font="$FONT_TEXT" \
                      icon.color="$TEXT_COLOR" \
                      update_freq=2 \
-                     script="$CONFIG_DIR/plugins/cpu.sh" \
-                     mouse.entered_script="$HOVER_ENTER_SCRIPT" \
-                     mouse.exited_script="$HOVER_EXIT_SCRIPT"
+                     script="$CONFIG_DIR/plugins/cpu.sh"

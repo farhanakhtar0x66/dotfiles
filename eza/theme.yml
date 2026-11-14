@@ -1,0 +1,76 @@
+# eza — Zacess High Contrast
+filekinds:
+  normal: { foreground: "#ffffff" }
+  directory: { foreground: "#8fd0ff" }
+  symlink: { foreground: "#f2a6ff" }
+  executable: { foreground: "#26f444" }
+  pipe: { foreground: "#ffe08a" }
+  socket: { foreground: "#ff9e94" }
+  special: { foreground: "#f2a6ff" }
+  mount_point: { foreground: "#8fd0ff" }
+
+perms:
+  user_read: { foreground: "#b3b3b3" }
+  user_write: { foreground: "#f5c400" }
+  user_execute_file: { foreground: "#26f444" }
+  user_execute_other: { foreground: "#26f444" }
+  group_read: { foreground: "#b3b3b3" }
+  group_write: { foreground: "#f5c400" }
+  group_execute: { foreground: "#26f444" }
+  other_read: { foreground: "#b3b3b3" }
+  other_write: { foreground: "#f5c400" }
+  other_execute: { foreground: "#26f444" }
+
+size:
+  number_byte: { foreground: "#ffffff" }
+  number_kilo: { foreground: "#8fd0ff" }
+  number_mega: { foreground: "#f2a6ff" }
+  number_giga: { foreground: "#ffe08a" }
+  number_huge: { foreground: "#ff9e94" }
+  unit_byte: { foreground: "#b3b3b3" }
+  unit_kilo: { foreground: "#b3b3b3" }
+  unit_mega: { foreground: "#b3b3b3" }
+  unit_giga: { foreground: "#b3b3b3" }
+  unit_huge: { foreground: "#b3b3b3" }
+
+users:
+  user_you: { foreground: "#ffffff", is_bold: true }
+  user_root: { foreground: "#ff9e94", is_bold: true }
+  user_other: { foreground: "#b3b3b3" }
+  group_yours: { foreground: "#b3b3b3" }
+  group_other: { foreground: "#b3b3b3" }
+  group_root: { foreground: "#ff9e94" }
+
+links:
+  normal: { foreground: "#b3b3b3" }
+  multi_link_file: { foreground: "#f2a6ff" }
+
+git:
+  new: { foreground: "#26f444" }
+  modified: { foreground: "#f5c400" }
+  deleted: { foreground: "#ff9e94" }
+  renamed: { foreground: "#8fd0ff" }
+  ignored: { foreground: "#5c5c5c" }
+  conflicted: { foreground: "#ff9e94" }
+
+git_repo:
+  branch_main: { foreground: "#8fd0ff" }
+  branch_other: { foreground: "#f2a6ff" }
+  git_clean: { foreground: "#26f444" }
+  git_dirty: { foreground: "#f5c400" }
+
+file_type:
+  image: { foreground: "#f2a6ff" }
+  video: { foreground: "#f2a6ff" }
+  music: { foreground: "#8fd0ff" }
+  document: { foreground: "#c8e6ff" }
+  compressed: { foreground: "#ff9e94" }
+  temp: { foreground: "#b3b3b3" }
+  compiled: { foreground: "#b3b3b3" }
+  source: { foreground: "#8fd0ff" }
+
+date: { foreground: "#b3b3b3" }
+punctuation: { foreground: "#5c5c5c" }
+header: { foreground: "#ffffff", is_bold: true }
+broken_symlink: { foreground: "#ff9e94" }
+broken_path_overlay: { foreground: "#ff9e94" }

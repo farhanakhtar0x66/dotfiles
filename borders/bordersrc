@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# JankyBorders — a thin, dim-white outline on the focused window.
+# Run `borders` (no args) after editing; aerospace starts it at login.
+options=(
+  style=round
+  width=4.0
+  hidpi=on
+  active_color=0xffd0d0d0     # light grey — focused window
+  inactive_color=0x00000000   # no outline on unfocused windows
+)
+borders "${options[@]}"

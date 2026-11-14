@@ -10,6 +10,4 @@ sketchybar --add item battery right \
                          label="100%" \
                          label.color="$TEXT_COLOR" \
                          update_freq=120 \
-                         script="$CONFIG_DIR/plugins/battery.sh" \
-                         mouse.entered_script="$HOVER_ENTER_SCRIPT" \
-                         mouse.exited_script="$HOVER_EXIT_SCRIPT"
+                         script="$CONFIG_DIR/plugins/battery.sh"

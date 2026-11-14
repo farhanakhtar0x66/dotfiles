@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Network plugin
+CONFIG_DIR="${CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar}"
+source "$CONFIG_DIR/colors.sh"
+handle_hover
 CACHE_FILE="/tmp/network_bytes"
 # en0
 BYTES=$(netstat -ibn | awk '/en0/ && /Link/ {print $7; exit}')

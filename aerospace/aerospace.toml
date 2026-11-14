@@ -1,77 +1,71 @@
 config-version = 2
 
-# Startup & Integration
-after-startup-command = [
-  'exec-and-forget sketchybar',
-  'exec-and-forget borders active_color=0xffcba6f7 inactive_color=0xff313244 width=8.0 hidpi=on',
-]
-exec-on-workspace-change = [
-  '/bin/bash',
-  '-c',
-  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
-]
-
-# General Settings
+# ── Startup ────────────────────────────────────────────────
 start-at-login = true
 auto-reload-config = true
-on-mode-changed = []
+after-startup-command = [
+  'exec-and-forget sketchybar',
+  'exec-and-forget ~/.config/borders/bordersrc',
+]
 
-# Normalization & Layout
-enable-normalization-flatten-containers = true
-enable-normalization-opposite-orientation-for-nested-containers = true
-accordion-padding = 30
+# Tell the bar which workspace is focused (workspaces.sh reads FOCUSED_WORKSPACE).
+exec-on-workspace-change = [
+  '/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# ── Layout ─────────────────────────────────────────────────
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
+accordion-padding = 30
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
 automatically-unhide-macos-hidden-apps = false
 key-mapping.preset = 'qwerty'
-
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
-persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+persistent-workspaces = ['1', '2', '3', '4', '5']   # 6-9 are created on demand
 
 [gaps]
 inner.horizontal = 10
 inner.vertical = 10
 outer.left = 10
-outer.bottom = 10
-outer.top = 10
 outer.right = 10
+outer.bottom = 10
+# Built-in display: the 38pt sticky bar sits in the notch strip, so only a normal gap.
+# External monitors: leave room for the bar too.
+outer.top = [{ monitor.built-in = 10 }, 48]
 
+# ── Keys (alt = main modifier) ─────────────────────────────
 [mode.main.binding]
-# Layout
+# layout
 alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
 alt-f = 'layout floating tiling'
 alt-r = 'flatten-workspace-tree'
 
-# Focus
+# focus / move / swap / join  (h j k l)
 alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
-
-# Move Windows
 alt-ctrl-h = 'move left'
 alt-ctrl-j = 'move down'
 alt-ctrl-k = 'move up'
 alt-ctrl-l = 'move right'
-
-# Swap Windows
 alt-cmd-h = 'swap left'
 alt-cmd-j = 'swap down'
 alt-cmd-k = 'swap up'
 alt-cmd-l = 'swap right'
-
-# Join Splits
 alt-shift-h = 'join-with left'
 alt-shift-j = 'join-with down'
 alt-shift-k = 'join-with up'
 alt-shift-l = 'join-with right'
 
-# Resize
+# resize
 alt-minus = 'resize smart -50'
 alt-equal = 'resize smart +50'
 
-# Workspaces Navigation
+# workspaces
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
@@ -81,24 +75,23 @@ alt-6 = 'workspace 6'
 alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
-
-# Move Window to Workspace
-alt-shift-1 = 'move-node-to-workspace 1'
-alt-shift-2 = 'move-node-to-workspace 2'
-alt-shift-3 = 'move-node-to-workspace 3'
-alt-shift-4 = 'move-node-to-workspace 4'
-alt-shift-5 = 'move-node-to-workspace 5'
-alt-shift-6 = 'move-node-to-workspace 6'
-alt-shift-7 = 'move-node-to-workspace 7'
-alt-shift-8 = 'move-node-to-workspace 8'
-alt-shift-9 = 'move-node-to-workspace 9'
-
-# Workspace & Monitor Extras
 alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
-alt-shift-s = 'exec-and-forget screencapture -i -c'
 
-# Service Mode
+# move window to workspace (and refresh the bar's app icons)
+alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger space_windows_change']
+alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger space_windows_change']
+
+# extras
+alt-shift-s = 'exec-and-forget screencapture -i -c'
+alt-shift-b = 'exec-and-forget ~/.local/bin/rawmax toggle'   # brightness: max ⇄ indoor
 alt-shift-semicolon = 'mode service'
 
 [mode.service.binding]
@@ -106,6 +99,7 @@ esc = ['reload-config', 'mode main']
 r = ['flatten-workspace-tree', 'mode main']
 backspace = ['close-all-windows-but-current', 'mode main']
 
+# Refresh the bar's workspace icons whenever a window appears.
 [[on-window-detected]]
 if = 'true'
 run = ['exec-and-forget sketchybar --trigger space_windows_change']

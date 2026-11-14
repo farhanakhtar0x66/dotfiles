@@ -10,6 +10,4 @@ sketchybar --add item network e \
                          label="--" \
                          label.color="$TEXT_COLOR" \
                          update_freq=2 \
-                         script="$CONFIG_DIR/plugins/network.sh" \
-                         mouse.entered_script="$HOVER_ENTER_SCRIPT" \
-                         mouse.exited_script="$HOVER_EXIT_SCRIPT"
+                         script="$CONFIG_DIR/plugins/network.sh"

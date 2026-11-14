@@ -1,144 +1,87 @@
-#!/usr/bin/env bash
-
-# Update all workspace badges from one AeroSpace query.
+#!/bin/zsh -f
+# Workspace pills. Two paths, so a workspace switch never waits on a window query:
+#   aerospace_workspace_change → repaint from cached icons (no aerospace call before painting)
+#   anything else (windows opened/closed/moved, app switched, startup) → debounced icon refresh
 CONFIG_DIR="${CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar}"
 source "$CONFIG_DIR/colors.sh"
+source "$CONFIG_DIR/helpers/app_icon.sh"
+zmodload zsh/zselect
 
-WORKSPACE_COUNT=9
-ICON_GAP="  "
-STATE_DIR="${SKETCHYBAR_STATE_DIR:-/tmp}"
-FOCUS_CACHE_FILE="$STATE_DIR/sketchybar-focused-workspace"
-WINDOW_CACHE_FILE="$STATE_DIR/sketchybar-workspace-window-list"
-WINDOW_LOCK_DIR="$STATE_DIR/sketchybar-workspace-refresh.lock"
-FOCUSED_WORKSPACE="${FOCUSED_WORKSPACE:-${AEROSPACE_WORKSPACE:-}}"
+COUNT=9
+PERMANENT=5                     # 1-5 always shown; 6-9 only while focused or holding windows
+STATE=${TMPDIR:-/tmp}/sketchybar-ws
+[[ -d $STATE ]] || mkdir -p $STATE
+FOCUS=$STATE/focus ICONS=$STATE/icons LOCK=$STATE/lock DIRTY=$STATE/dirty
 
-if [ -z "$FOCUSED_WORKSPACE" ]; then
-    if [ -f "$FOCUS_CACHE_FILE" ]; then
-        FOCUSED_WORKSPACE=$(<"$FOCUS_CACHE_FILE")
+# Paint all pills from the focus + icon caches. $1=1 → animate.
+paint() {
+  local focused sid label vis l
+  local -A icons
+  local -a a
+  read -r focused < $FOCUS 2>/dev/null
+  if [[ -r $ICONS ]]; then
+    while IFS= read -r l; do icons[${l%%$'\t'*}]=${l#*$'\t'}; done < $ICONS
+  fi
+  (( $1 )) && a=(--animate $WORKSPACE_CURVE $WORKSPACE_ANIMATION_FRAMES)
+  for sid in {1..$COUNT}; do
+    label=${icons[$sid]}
+    if [[ $sid == $focused ]]; then
+      a+=(--set space.$sid drawing=on icon=$sid icon.color=$ICON_DARK_COLOR
+          icon.background.color=$PEACH background.color=$SURFACE_COLOR
+          label="${label:-—}" label.color=$TEXT_COLOR label.width=dynamic)
     else
-        FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused 2>/dev/null)
+      if (( sid <= PERMANENT )) || [[ -n $label ]]; then vis=on; else vis=off; fi
+      a+=(--set space.$sid drawing=$vis icon=$sid icon.color=$TEXT_COLOR
+          icon.background.color=$SURFACE_COLOR background.color=0x00000000 label.width=0)
     fi
-fi
-
-if [ -n "$FOCUSED_WORKSPACE" ]; then
-    printf '%s\n' "$FOCUSED_WORKSPACE" > "$FOCUS_CACHE_FILE"
-fi
-
-if [ "$SENDER" = "space_windows_change" ]; then
-    if ! mkdir "$WINDOW_LOCK_DIR" 2>/dev/null; then
-        exit 0
-    fi
-    trap 'rmdir "$WINDOW_LOCK_DIR" 2>/dev/null' EXIT
-    sleep 0.08
-fi
-
-get_window_list() {
-    aerospace list-windows --all --format '%{workspace}%{tab}%{app-name}' 2>/dev/null | sort -u
+  done
+  sketchybar $a
+  REPLY=$focused
 }
 
-WINDOW_LIST=$(get_window_list)
-if [ "$SENDER" = "space_windows_change" ]; then
-    sleep 0.06
-    UPDATED_WINDOW_LIST=$(get_window_list)
+# Re-read which apps live on which workspace (one aerospace call), then repaint.
+refresh_icons() {
+  local -a rows
+  local -A acc
+  local r ws app out prev
+  typeset -g changed
+  rows=(${(ou)${(f)"$(aerospace list-windows --all --format '%{workspace}|%{app-name}' 2>/dev/null)"}})
+  for r in $rows; do
+    ws=${r%%|*} app=${r#*|}
+    [[ $ws == [1-9] && -n $app ]] || continue
+    app_icon $app
+    acc[$ws]+="${acc[$ws]:+ }$REPLY"
+  done
+  for ws in ${(ko)acc}; do out+="$ws"$'\t'"${acc[$ws]}"$'\n'; done
+  # Report whether anything changed: repainting unchanged pills without animation would
+  # snap them to their end state and cancel a workspace transition that is mid-flight.
+  changed=0
+  [[ -r $ICONS ]] && prev=$(<$ICONS)
+  [[ ${out%$'\n'} != "$prev" ]] && changed=1
+  (( changed )) && print -rn -- "$out" >| $ICONS
+}
 
-    if [ "$UPDATED_WINDOW_LIST" != "$WINDOW_LIST" ]; then
-        sleep 0.06
-        UPDATED_WINDOW_LIST=$(get_window_list)
-    fi
-
-    WINDOW_LIST="$UPDATED_WINDOW_LIST"
-fi
-
-if [ "$SENDER" = "space_windows_change" ] && [ -f "$WINDOW_CACHE_FILE" ]; then
-    PREVIOUS_WINDOW_LIST=$(<"$WINDOW_CACHE_FILE")
-    if [ "$WINDOW_LIST" = "$PREVIOUS_WINDOW_LIST" ]; then
-        exit 0
-    fi
-fi
-
-printf '%s\n' "$WINDOW_LIST" > "$WINDOW_CACHE_FILE"
-
-# Icon strings for applications
-ICON_STR=("" "" "" "" "" "" "" "" "" "")
-
-while IFS=$'\t' read -r workspace app_name; do
-    if [ -z "$workspace" ] || [ -z "$app_name" ]; then
-        continue
-    fi
-
-    case "$workspace" in
-        1|2|3|4|5|6|7|8|9) ;;
-        *) continue ;;
-    esac
-
-    icon=""
-    case "$app_name" in
-        # Browsers
-        "Helium"|"Google Chrome"|"Chrome"|"Brave Browser"|"Arc"|"Edge"|"Zen Browser") icon="" ;;
-        # Coding
-        "VSCodium"|"Code"|"Visual Studio Code"|"VSCode"|"Cursor"|"Neovim"|"nvim"|"Xcode"|"WebStorm"|"IntelliJ IDEA") icon="󰨞" ;;
-        # Terminals
-        "Ghostty"|"Terminal"|"Alacritty"|"iTerm2"|"iTerm"|"Warp"|"kitty") icon="" ;;
-        # Social
-        "Slack"|"Telegram"|"Messages"|"Messenger") icon="󰍡" ;;
-        # Media
-        "Music"|"Apple Music"|"YouTube Music") icon="" ;;
-        "IINA"|"VLC") icon="󰕼" ;;
-        # System and office
-        "Finder") icon="󰀶" ;;
-        "Clock") icon="󰃰" ;;
-        "Mail"|"Microsoft Outlook") icon="󰇮" ;;
-        "Calendar") icon="󰸗" ;;
-        "System Settings"|"System Preferences") icon="󰒓" ;;
-        "Notes"|"Notion"|"TextEdit"|"Pages"|"Word") icon="󱞁" ;;
-        # Other applications
-        "Chess") icon="" ;;
-        "Discord") icon="" ;;
-        "Hayase") icon="" ;;
-        "Safari") icon="" ;;
-        "Firefox"|"Firefox Developer Edition") icon="󰈹" ;;
-        "WhatsApp") icon="" ;;
-        "Spotify") icon="" ;;
-        *) icon="󰀻" ;;
-    esac
-
-    if [ -z "${ICON_STR[$workspace]}" ]; then
-        ICON_STR[$workspace]="$icon"
-    else
-        ICON_STR[$workspace]="${ICON_STR[$workspace]}${ICON_GAP}${icon}"
-    fi
-done <<< "$WINDOW_LIST"
-
-# Sketchybar badge animation
-if [ "$SENDER" = "space_windows_change" ]; then
-    SKETCHYBAR_ARGS=()
-else
-    SKETCHYBAR_ARGS=(--animate sin "$WORKSPACE_ANIMATION_FRAMES")
-fi
-for sid in $(seq 1 "$WORKSPACE_COUNT"); do
-    if [ "$sid" = "$FOCUSED_WORKSPACE" ]; then
-        SKETCHYBAR_ARGS+=(
-            --set "space.$sid"
-            drawing=on
-            icon="$sid"
-            icon.color="$ICON_DARK_COLOR"
-            icon.background.color="$PEACH"
-            background.color="$SURFACE_COLOR"
-            label="${ICON_STR[$sid]:-—}"
-            label.color="$TEXT_COLOR"
-            label.width=dynamic
-        )
-    else
-        SKETCHYBAR_ARGS+=(
-            --set "space.$sid"
-            drawing=on
-            icon="$sid"
-            icon.color="$TEXT_COLOR"
-            icon.background.color="$SURFACE_COLOR"
-            background.color=0x00000000
-            label.width=0
-        )
-    fi
-done
-
-sketchybar "${SKETCHYBAR_ARGS[@]}"
+case $SENDER in
+  aerospace_workspace_change)
+    print -r -- "${FOCUSED_WORKSPACE:-$(aerospace list-workspaces --focused 2>/dev/null)}" >| $FOCUS
+    paint 1
+    # Overlapping events can finish out of order: confirm against the truth once, off the hot path.
+    real=$(aerospace list-workspaces --focused 2>/dev/null)
+    if [[ -n $real && $real != $REPLY ]]; then print -r -- $real >| $FOCUS; paint 1; fi
+    ;;
+  *)
+    # Only one refresher at a time; events arriving meanwhile just ask for one more pass.
+    stale=($LOCK(N/mm+1)); (( $#stale )) && rmdir $LOCK 2>/dev/null
+    if ! mkdir $LOCK 2>/dev/null; then : >| $DIRTY; exit 0; fi
+    [[ -s $FOCUS ]] || print -r -- "$(aerospace list-workspaces --focused 2>/dev/null)" >| $FOCUS
+    while :; do
+      rm -f $DIRTY
+      [[ $SENDER == space_windows_change ]] && zselect -t 8      # let aerospace settle (80ms)
+      refresh_icons
+      # Startup/forced always paints; otherwise only when the icons really changed.
+      if (( changed )) || [[ $SENDER == forced || -z $SENDER ]]; then paint 0; fi
+      [[ -e $DIRTY ]] || break
+    done
+    rmdir $LOCK 2>/dev/null
+    ;;
+esac

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Volume plugin
+CONFIG_DIR="${CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar}"
+source "$CONFIG_DIR/colors.sh"
+handle_hover
 if [ "$SENDER" = "volume_change" ]; then
     sketchybar --set "$NAME" label="$INFO%"
 elif [ "$SENDER" = "mouse.scrolled" ]; then

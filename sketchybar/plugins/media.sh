@@ -1,31 +1,22 @@
 #!/usr/bin/env bash
-# Media plugin
+# Media plugin — state is pushed by helpers/media_stream.sh (MEDIA_TITLE / MEDIA_PLAYING).
+# Without pushed state (startup, wake) it asks media-control once.
 CONFIG_DIR="${CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar}"
 source "$CONFIG_DIR/colors.sh"
+handle_hover
+export PATH="/opt/homebrew/bin:$PATH"
 
-# nowplaying-cli
-NOWPLAYING_CLI="${NOWPLAYING_CLI:-$(command -v nowplaying-cli 2>/dev/null)}"
-if [ -z "$NOWPLAYING_CLI" ]; then
-    for candidate in /opt/homebrew/bin/nowplaying-cli /usr/local/bin/nowplaying-cli; do
-        if [ -x "$candidate" ]; then
-            NOWPLAYING_CLI="$candidate"
-            break
-        fi
-    done
+if [ -n "${MEDIA_TITLE+x}" ]; then
+    TITLE="$MEDIA_TITLE"; PLAYING="$MEDIA_PLAYING"
+else
+    IFS=$'\x1f' read -r TITLE PLAYING <<< "$(media-control get --no-artwork 2>/dev/null \
+        | jq -r '[(.title // ""), ((.playing // false) | tostring)] | join("\u001f")' 2>/dev/null)"
 fi
 
-if [ -x "$NOWPLAYING_CLI" ]; then
-    STATE=$("$NOWPLAYING_CLI" get playbackRate 2>/dev/null)
-    TITLE=$("$NOWPLAYING_CLI" get title 2>/dev/null)
-
-    if [ "$STATE" = "1" ] || [ "$STATE" = "1.0" ] || [ "$STATE" = "playing" ]; then
-        sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰎆" label="$TITLE" icon.background.color="$GREEN"
-    elif [ -n "$TITLE" ] && [ "$TITLE" != "null" ]; then
-        sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰏤" label="$TITLE" icon.background.color="$YELLOW"
-    else
-        sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰎆" label="Offline" icon.background.color="$INACTIVE_COLOR"
-    fi
+if [ -n "$TITLE" ] && [ "$PLAYING" = "true" ]; then
+    sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰎆" label="$TITLE" icon.background.color="$GREEN"
+elif [ -n "$TITLE" ]; then
+    sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰏤" label="$TITLE" icon.background.color="$YELLOW"
 else
-    # Fallback but may not needed coz the script will install everything 
-    sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on label="Offline" icon.background.color="$INACTIVE_COLOR"
+    sketchybar --animate sin "$VALUE_ANIMATION_FRAMES" --set "$NAME" drawing=on icon="󰎆" label="Offline" icon.background.color="$INACTIVE_COLOR"
 fi

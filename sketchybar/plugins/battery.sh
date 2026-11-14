@@ -2,6 +2,7 @@
 # Battery plugin
 CONFIG_DIR="${CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sketchybar}"
 source "$CONFIG_DIR/colors.sh"
+handle_hover
 
 BATT_INFO=$(pmset -g batt)
 PERCENTAGE=$(echo "$BATT_INFO" | grep -Eo "\d+%" | cut -d% -f1)

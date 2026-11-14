@@ -6,33 +6,37 @@ export CONFIG_DIR
 source "$CONFIG_DIR/colors.sh"
 
 # Bar geometry
+# Bar geometry: sticky — full width, flush with the screen edge, no rounding.
+# 38pt is taller than the 13" MacBook Air notch strip (37.5pt), so it hides the notch;
+# notch_width keeps items clear of the camera cutout. Translucent over a blur.
 sketchybar --bar \
   position=top \
-  height=36 \
-  y_offset=2 \
-  margin=8 \
-  corner_radius=12 \
+  height=38 \
+  y_offset=0 \
+  margin=0 \
+  corner_radius=0 \
   color="$BAR_COLOR" \
-  border_color="$BAR_BORDER_COLOR" \
-  border_width=1 \
+  border_width=0 \
   blur_radius=20 \
-  padding_left=8 \
-  padding_right=8 \
+  shadow=off \
+  sticky=on \
+  padding_left=10 \
+  padding_right=10 \
   notch_width=208
 
 # Shared item defaults
 sketchybar --default \
-  background.height=26 \
+  background.height=30 \
   background.color="$SURFACE_COLOR" \
-  background.corner_radius=8 \
+  background.corner_radius=10 \
   background.padding_left=4 \
   background.padding_right=4 \
-  icon.padding_left=8 \
-  icon.padding_right=8 \
-  icon.background.height=26 \
-  icon.background.corner_radius=8 \
-  label.padding_left=8 \
-  label.padding_right=8 \
+  icon.padding_left=10 \
+  icon.padding_right=10 \
+  icon.background.height=30 \
+  icon.background.corner_radius=10 \
+  label.padding_left=10 \
+  label.padding_right=10 \
   icon.font="$FONT_DISPLAY" \
   label.font="$FONT_TEXT"
 
@@ -54,4 +58,13 @@ for item in "${ITEMS[@]}"; do
 done
 
 # Refresh immediately after all items are registered
+# Now-playing listener (event-driven, no polling). Restarted on every reload via a pid file.
+PIDFILE="${TMPDIR:-/tmp}/sketchybar.media_stream.pid"
+if [ -r "$PIDFILE" ]; then
+  pkill -P "$(<"$PIDFILE")" 2>/dev/null
+  kill "$(<"$PIDFILE")" 2>/dev/null
+fi
+nohup "$CONFIG_DIR/helpers/media_stream.sh" >/dev/null 2>&1 &
+echo $! > "$PIDFILE"
+
 sketchybar --update

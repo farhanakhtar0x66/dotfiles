@@ -1,20 +1,48 @@
-# Font
+# ── Font ───────────────────────────────────────────────
 font-family = "JetBrainsMono Nerd Font"
-font-style = "Bold"
 font-size = 14
+font-thicken = true
+adjust-cell-height = 4%
 
-# Theme
-theme = "Catppuccin Mocha"
+# ── Zacess High Contrast Dark ──────────────────────────
+background = #000000
+foreground = #ffffff
+cursor-color = #f5c400
+cursor-text = #000000
+selection-background = #0a2552
+selection-foreground = #ffffff
+palette = 0=#b3b3b3
+palette = 1=#ff9e94
+palette = 2=#26f444
+palette = 3=#f5c400
+palette = 4=#8fd0ff
+palette = 5=#f2a6ff
+palette = 6=#00f4e0
+palette = 7=#e0e0e0
+palette = 8=#cccccc
+palette = 9=#ffc4bd
+palette = 10=#95ff98
+palette = 11=#ffe08a
+palette = 12=#c8e6ff
+palette = 13=#ffcdf7
+palette = 14=#56fff3
+palette = 15=#ffffff
 
-# Cursor
-cursor-style = block
-
-# Window Padding
-window-padding-x = 8
+# ── Window ─────────────────────────────────────────────
+background-opacity = 0.82
+background-blur = 20
+window-padding-x = 10
 window-padding-y = 8
+window-padding-balance = true
+window-colorspace = display-p3
+macos-titlebar-style = transparent
+unfocused-split-opacity = 0.85
 
-# Mouse
+# ── Behaviour ──────────────────────────────────────────
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
 mouse-hide-while-typing = true
-
-# Scrollbar
 scrollbar = never
+copy-on-select = clipboard
+confirm-close-surface = false
