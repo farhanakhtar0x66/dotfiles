@@ -111,6 +111,7 @@ function M.setup(opts)
     local win = vis.win
     if not win or win.file.name or win.file.size > 0 then return end   -- started with a file / stdin
     local text, cursor = build(win.width, win.height)
+    M.w, M.h = win.width, win.height
     M.active, M.win, M.file = true, win, win.file
     vis:command('set number off')
     vis:command('set relativenumbers off')
@@ -128,6 +129,15 @@ function M.setup(opts)
       M.active = false
       if M.restore then M.restore() end
       return
+    end
+    -- Window resized (terminal resize, tmux split, ...): re-centre by rebuilding the page.
+    if win.width ~= M.w or win.height ~= M.h then
+      M.w, M.h = win.width, win.height
+      local text, cursor = build(M.w, M.h)
+      local f = win.file
+      f:delete(0, f.size)
+      f:insert(0, text)
+      win.selection.pos = cursor
     end
     for _, r in ipairs(ranges) do win:style(r[1], r[2], r[3]) end
   end)
